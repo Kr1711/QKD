@@ -3,13 +3,13 @@ from qiskit import QuantumCircuit, Aer, transpile
 from qiskit_aer import AerSimulator
 import numpy as np
 n=int(input("Enter length of initial string: "))
-#Preparing string for Alice
+
+#Preparing string and basis for Alice
 Initial_string=[]
+Alice_basis=[]
 for i in range(n):
     String=np.random.randint(2)
     Initial_string.append(String)
-print(Initial_string)
-#Creating the key to be sent
 created_key=[]
 def creating_key(bit):
     for i in range(n):   
@@ -24,12 +24,11 @@ def creating_key(bit):
 message=creating_key(Initial_string)
 
 #Generating basis for Bob
-
 Bob_basis=[]
 for i in range(n):
     basis=np.random.randint(2)
     Bob_basis.append(basis)
-print(Bob_basis)
+    
 #measurement by Bob
 def measure(sent_key, basis):
     backend=Aer.get_backend('aer_simulator')
@@ -47,7 +46,8 @@ def measure(sent_key, basis):
         measurements.append(int(measured_bit))
     return measurements
 Bob_results=measure(created_key, Bob_basis)
-print(Bob_results)
+
+#Defining the protocol
 def Protocol(result,basis):
     key=[]
     for i in range(n):
@@ -57,14 +57,26 @@ def Protocol(result,basis):
             if basis[i]==1:
                 key.append(0)
     return key
-Bob_key=Protocol(Bob_results,Bob_basis)
-print(Bob_key)
 order=[]
 for i in range(n):
     if Bob_results[i]==1:
         order.append(i)
-print(order)
+Bob_key=Protocol(Bob_results,Bob_basis)
+x=len(order)
+Final_string=[]
 
+
+for i in range(x):
+    Final_string.append(Initial_string[order[i]])
+
+#Testing
+if Bob_key==Final_string:
+    print("The keys match, hence the protocol is working")
+else:
+    print("Error in string")
+    
+print("length of initial key:",n)
+print("length of final key:",x)
         
 
     
